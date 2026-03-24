@@ -12,22 +12,29 @@ import (
 )
 
 type searchResult struct {
-	Title      string  `json:"title"`
-	Category   string  `json:"category"`
-	Severity   *string `json:"severity"`
-	Content    string  `json:"content"`
-	Mitigation *string `json:"mitigation"`
-	Quality    int     `json:"quality"`
+	Title        string  `json:"title"`
+	Category     string  `json:"category"`
+	Severity     *string `json:"severity"`
+	Content      string  `json:"content"`
+	CodeExamples *string `json:"code_examples"`
+	Mitigation   *string `json:"mitigation"`
+	Quality      int     `json:"quality"`
 }
 
 func Search(args []string) {
 	fs := flag.NewFlagSet("knowledge search", flag.ExitOnError)
 	limit := fs.Int("limit", 5, "max results (1-20)")
+	threshold := fs.Float64("threshold", 0.5, "similarity threshold (0-2, lower = stricter)")
+	jsonOut := fs.Bool("json", false, "output as JSON")
 	fs.Parse(args)
 
 	text := strings.Join(fs.Args(), " ")
 	if text == "" {
-		fmt.Fprintln(os.Stderr, "Usage: vellma knowledge search <text> [--limit N]")
+		fmt.Fprintln(os.Stderr, "Usage: vellma knowledge search <text> [--limit N] [--threshold N] [--json]")
+		os.Exit(1)
+	}
+	if *threshold < 0 || *threshold > 2 {
+		fmt.Fprintln(os.Stderr, "Error: threshold must be between 0 and 2")
 		os.Exit(1)
 	}
 
@@ -39,12 +46,21 @@ func Search(args []string) {
 	}
 
 	body, err := c.Post("/knowledge/search", map[string]interface{}{
-		"text":  text,
-		"limit": *limit,
+		"text":      text,
+		"limit":     *limit,
+		"threshold": *threshold,
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
+	}
+
+	if *jsonOut {
+		var raw json.RawMessage
+		json.Unmarshal(body, &raw)
+		out, _ := json.MarshalIndent(raw, "", "  ")
+		fmt.Println(string(out))
+		return
 	}
 
 	var resp struct {
@@ -60,23 +76,60 @@ func Search(args []string) {
 		return
 	}
 
+	fmt.Printf("%d result(s) found:\n\n", len(resp.Results))
+
 	for i, r := range resp.Results {
 		severity := "unknown"
 		if r.Severity != nil {
-			severity = *r.Severity
+			severity = strings.ToUpper(*r.Severity)
 		}
-		fmt.Printf("[%d] %s (%s — %s)\n", i+1, r.Title, r.Category, severity)
-		fmt.Printf("    %s\n", truncate(r.Content, 200))
+
+		fmt.Printf("  ┌─ [%d] %s\n", i+1, r.Title)
+		fmt.Printf("  │  Category: %s  Severity: %s  Quality: %d/5\n", r.Category, severity, r.Quality)
+		fmt.Printf("  │\n")
+
+		fmt.Printf("  │  Description:\n")
+		for _, line := range wrapText(r.Content, 72) {
+			fmt.Printf("  │    %s\n", line)
+		}
+
+		if r.CodeExamples != nil && *r.CodeExamples != "" {
+			fmt.Printf("  │\n")
+			fmt.Printf("  │  Code Examples:\n")
+			for _, line := range strings.Split(*r.CodeExamples, "\n") {
+				fmt.Printf("  │    %s\n", line)
+			}
+		}
+
 		if r.Mitigation != nil && *r.Mitigation != "" {
-			fmt.Printf("    Mitigation: %s\n", truncate(*r.Mitigation, 150))
+			fmt.Printf("  │\n")
+			fmt.Printf("  │  Mitigation:\n")
+			for _, line := range wrapText(*r.Mitigation, 72) {
+				fmt.Printf("  │    %s\n", line)
+			}
 		}
-		fmt.Println()
+
+		fmt.Printf("  └─\n\n")
 	}
 }
 
-func truncate(s string, max int) string {
-	if len(s) <= max {
-		return s
+func wrapText(s string, width int) []string {
+	var lines []string
+	words := strings.Fields(s)
+	if len(words) == 0 {
+		return lines
 	}
-	return s[:max] + "..."
+	current := words[0]
+	for _, w := range words[1:] {
+		if len(current)+1+len(w) > width {
+			lines = append(lines, current)
+			current = w
+		} else {
+			current += " " + w
+		}
+	}
+	if current != "" {
+		lines = append(lines, current)
+	}
+	return lines
 }

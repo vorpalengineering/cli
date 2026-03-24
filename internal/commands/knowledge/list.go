@@ -26,6 +26,7 @@ func List(args []string) {
 	offset := fs.Int("offset", 0, "skip N entries")
 	category := fs.String("category", "", "filter by category")
 	severity := fs.String("severity", "", "filter by severity")
+	jsonOut := fs.Bool("json", false, "output as JSON")
 	fs.Parse(args)
 
 	cfg, _ := config.Load()
@@ -49,6 +50,14 @@ func List(args []string) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
+	}
+
+	if *jsonOut {
+		var raw json.RawMessage
+		json.Unmarshal(body, &raw)
+		out, _ := json.MarshalIndent(raw, "", "  ")
+		fmt.Println(string(out))
+		return
 	}
 
 	var resp struct {

@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		printHelp()
+		commands.PrintHelp()
 		os.Exit(0)
 	}
 
@@ -25,7 +25,7 @@ func main() {
 		case "set-key":
 			auth.SetKey(os.Args[3:])
 		case "status":
-			auth.Status()
+			auth.Status(os.Args[3:])
 		default:
 			fmt.Fprintf(os.Stderr, "Unknown auth command: %s\n", os.Args[2])
 			os.Exit(1)
@@ -50,33 +50,11 @@ func main() {
 		commands.PrintVersion()
 
 	case "help", "--help", "-h":
-		printHelp()
+		commands.PrintHelp()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", os.Args[1])
-		printHelp()
+		commands.PrintHelp()
 		os.Exit(1)
 	}
-}
-
-func printHelp() {
-	fmt.Println(`vellma - Vorpal Engineering CLI
-
-Usage:
-  vellma <command> [subcommand] [flags]
-
-Commands:
-  auth set-key <key>     Store your API key
-  auth status            Show authentication status
-
-  knowledge search <text>  Search the knowledge base
-    --limit N              Max results (default 5, max 20)
-  knowledge list           List knowledge entries
-    --limit N              Entries per page (default 10)
-    --offset N             Skip N entries
-    --category <name>      Filter by category
-    --severity <level>     Filter by severity
-
-  version                Show CLI version
-  help                   Show this help`)
 }

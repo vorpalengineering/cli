@@ -13,11 +13,15 @@ type Config struct {
 
 func configDir() string {
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".vellma")
+	return filepath.Join(home, ".vorpal")
 }
 
 func configPath() string {
 	return filepath.Join(configDir(), "config.json")
+}
+
+func Path() string {
+	return configPath()
 }
 
 func Load() (*Config, error) {
@@ -25,23 +29,13 @@ func Load() (*Config, error) {
 		APIURL: "http://localhost:8080",
 	}
 
-	// Env var override
-	if url := os.Getenv("VELLMA_API_URL"); url != "" {
-		cfg.APIURL = url
-	}
-
 	data, err := os.ReadFile(configPath())
 	if err != nil {
-		return cfg, nil // Return defaults if no config file
+		return cfg, nil
 	}
 
 	if err := json.Unmarshal(data, cfg); err != nil {
 		return cfg, nil
-	}
-
-	// Env var takes priority over file
-	if url := os.Getenv("VELLMA_API_URL"); url != "" {
-		cfg.APIURL = url
 	}
 
 	return cfg, nil

@@ -30,7 +30,7 @@ func Search(args []string) {
 
 	text := strings.Join(fs.Args(), " ")
 	if text == "" {
-		fmt.Fprintln(os.Stderr, "Usage: vellma knowledge search <text> [--limit N] [--threshold N] [--json]")
+		fmt.Fprintln(os.Stderr, "Usage: vorpal knowledge search <text> [--limit N] [--threshold N] [--json]")
 		os.Exit(1)
 	}
 	if *threshold < 0 || *threshold > 2 {

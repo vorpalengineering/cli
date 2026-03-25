@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/vorpalengineering/cli/internal/commands"
-	"github.com/vorpalengineering/cli/internal/commands/auth"
+	"github.com/vorpalengineering/cli/internal/commands/config"
 	"github.com/vorpalengineering/cli/internal/commands/knowledge"
 )
 
@@ -16,24 +16,22 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case "auth":
-		if len(os.Args) < 3 {
-			fmt.Fprintln(os.Stderr, "Usage: vellma auth <set-key|status>")
-			os.Exit(1)
+	case "config":
+		if len(os.Args) <= 2 {
+			config.View()
+			return
 		}
 		switch os.Args[2] {
-		case "set-key":
-			auth.SetKey(os.Args[3:])
-		case "status":
-			auth.Status(os.Args[3:])
+		case "set":
+			config.Set(os.Args[3:])
 		default:
-			fmt.Fprintf(os.Stderr, "Unknown auth command: %s\n", os.Args[2])
+			fmt.Fprintf(os.Stderr, "Unknown config command: %s\n", os.Args[2])
 			os.Exit(1)
 		}
 
 	case "knowledge":
 		if len(os.Args) < 3 {
-			fmt.Fprintln(os.Stderr, "Usage: vellma knowledge <search|list>")
+			fmt.Fprintln(os.Stderr, "Usage: vorpal knowledge <search|list>")
 			os.Exit(1)
 		}
 		switch os.Args[2] {

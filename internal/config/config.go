@@ -26,7 +26,7 @@ func Path() string {
 
 func Load() (*Config, error) {
 	cfg := &Config{
-		APIURL: "http://localhost:8080",
+		APIURL: "https://api.vorpalengineering.com",
 	}
 
 	data, err := os.ReadFile(configPath())

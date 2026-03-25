@@ -51,26 +51,6 @@ func (c *Client) Post(path string, body interface{}) ([]byte, error) {
 	return c.do(req)
 }
 
-func (c *Client) Ping() error {
-	req, err := http.NewRequest("GET", c.baseURL+"/knowledge?limit=1", nil)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("X-API-Key", c.apiKey)
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("cannot reach API at %s: %w", c.baseURL, err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode == 401 {
-		return fmt.Errorf("API key is invalid or revoked")
-	}
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("API returned status %d", resp.StatusCode)
-	}
-	return nil
-}
-
 func (c *Client) do(req *http.Request) ([]byte, error) {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

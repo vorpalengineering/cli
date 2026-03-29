@@ -23,8 +23,8 @@ func Set(args []string) {
 	cfg, _ := appconfig.Load()
 
 	if *apiKey != "" {
-		if !strings.HasPrefix(*apiKey, "vk_live_") {
-			fmt.Fprintln(os.Stderr, "Error: API key must start with 'vk_live_'")
+		if !strings.HasPrefix(*apiKey, "ve_live_") {
+			fmt.Fprintln(os.Stderr, "Error: API key must start with 've_live_'")
 			os.Exit(1)
 		}
 		cfg.APIKey = *apiKey

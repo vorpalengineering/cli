@@ -57,7 +57,7 @@ vorpal
 vorpal config
 
 # Set API key
-vorpal config set --api-key vk_live_...
+vorpal config set --api-key ve_live_...
 
 # Search knowledge base
 vorpal knowledge search "reentrancy vulnerability"
@@ -75,7 +75,7 @@ Config is stored at `~/.vorpal/config.json`:
 
 ```json
 {
-    "api_key": "vk_live_...",
+    "api_key": "ve_live_...",
     "api_url": "https://api.vorpalengineering.com"
 }
 ```

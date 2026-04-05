@@ -13,11 +13,10 @@ import (
 )
 
 type knowledgeEntry struct {
-	ID       string  `json:"id"`
-	Title    string  `json:"title"`
-	Category string  `json:"category"`
-	Severity *string `json:"severity"`
-	Quality  int     `json:"quality"`
+	ID       string `json:"id"`
+	Title    string `json:"title"`
+	Category string `json:"category"`
+	Quality  int    `json:"quality"`
 }
 
 func List(args []string) {
@@ -25,7 +24,6 @@ func List(args []string) {
 	limit := fs.Int("limit", 10, "entries per page")
 	offset := fs.Int("offset", 0, "skip N entries")
 	category := fs.String("category", "", "filter by category")
-	severity := fs.String("severity", "", "filter by severity")
 	jsonOut := fs.Bool("json", false, "output as JSON")
 	fs.Parse(args)
 
@@ -41,9 +39,6 @@ func List(args []string) {
 	params.Set("offset", strconv.Itoa(*offset))
 	if *category != "" {
 		params.Set("category", *category)
-	}
-	if *severity != "" {
-		params.Set("severity", *severity)
 	}
 
 	body, err := c.Get("/knowledge?" + params.Encode())
@@ -77,11 +72,7 @@ func List(args []string) {
 	}
 
 	for _, e := range resp.Entries {
-		severity := ""
-		if e.Severity != nil {
-			severity = *e.Severity
-		}
-		fmt.Printf("  [%s] %s (%s) — %s\n", e.ID[:8], e.Title, e.Category, severity)
+		fmt.Printf("  [%s] %s (%s)\n", e.ID[:8], e.Title, e.Category)
 	}
 
 	fmt.Printf("\nShowing %d-%d of %d entries\n", resp.Offset+1, resp.Offset+len(resp.Entries), resp.Total)

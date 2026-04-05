@@ -43,7 +43,6 @@ vorpal
 │       ├── --limit N               Entries per page (default 10)
 │       ├── --offset N              Skip N entries
 │       ├── --category <name>       Filter by category
-│       ├── --severity <level>      Filter by severity
 │       └── --json                  Output as JSON
 │
 ├── version                         Show CLI version
@@ -66,7 +65,7 @@ vorpal knowledge search --threshold 0.3 "access control"
 
 # List knowledge entries
 vorpal knowledge list
-vorpal knowledge list --category Reentrancy --severity critical
+vorpal knowledge list --category security
 ```
 
 ## Configuration

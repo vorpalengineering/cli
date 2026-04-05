@@ -14,7 +14,6 @@ import (
 type searchResult struct {
 	Title        string  `json:"title"`
 	Category     string  `json:"category"`
-	Severity     *string `json:"severity"`
 	Content      string  `json:"content"`
 	CodeExamples *string `json:"code_examples"`
 	Mitigation   *string `json:"mitigation"`
@@ -79,13 +78,8 @@ func Search(args []string) {
 	fmt.Printf("%d result(s) found:\n\n", len(resp.Results))
 
 	for i, r := range resp.Results {
-		severity := "unknown"
-		if r.Severity != nil {
-			severity = strings.ToUpper(*r.Severity)
-		}
-
 		fmt.Printf("  ┌─ [%d] %s\n", i+1, r.Title)
-		fmt.Printf("  │  Category: %s  Severity: %s  Quality: %d/5\n", r.Category, severity, r.Quality)
+		fmt.Printf("  │  Category: %s  Quality: %d/5\n", r.Category, r.Quality)
 		fmt.Printf("  │\n")
 
 		fmt.Printf("  │  Description:\n")

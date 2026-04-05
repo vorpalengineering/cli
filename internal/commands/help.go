@@ -22,7 +22,6 @@ Commands:
     --limit N              Entries per page (default 10)
     --offset N             Skip N entries
     --category <name>      Filter by category
-    --severity <level>     Filter by severity
     --json                 Output as JSON
 
   version                Show CLI version

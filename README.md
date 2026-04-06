@@ -52,11 +52,13 @@ vorpal
 │   │   ├── --threshold N           Similarity threshold for semantic (default 0.5)
 │   │   └── --json                  Output as JSON
 │   │
-│   └── list                        List knowledge entries
-│       ├── --limit N               Entries per page (default 10)
-│       ├── --offset N              Skip N entries
-│       ├── --category <name>       Filter by category
-│       └── --json                  Output as JSON
+│   ├── list                        List knowledge entries
+│   │   ├── --limit N               Entries per page (default 10)
+│   │   ├── --offset N              Skip N entries
+│   │   ├── --category <name>       Filter by category
+│   │   └── --json                  Output as JSON
+│   │
+│   └── categories                  List available categories
 │
 ├── version                         Show CLI version
 └── help                            Show help

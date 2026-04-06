@@ -24,6 +24,7 @@ Commands:
     --offset N             Skip N entries
     --category <name>      Filter by category
     --json                 Output as JSON
+  knowledge categories     List available categories
 
   version                Show CLI version
   help                   Show this help`)

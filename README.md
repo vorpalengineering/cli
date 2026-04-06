@@ -34,9 +34,10 @@ vorpal
 │       └── --api-url <url>         API base URL
 │
 ├── knowledge
-│   ├── search <text>               Search the knowledge base
+│   ├── search <text>               Search the knowledge base (keyword by default)
+│   │   ├── --mode <mode>           Search mode: keyword or semantic (default keyword)
 │   │   ├── --limit N               Max results (default 5, max 20)
-│   │   ├── --threshold N           Similarity threshold (default 0.5)
+│   │   ├── --threshold N           Similarity threshold for semantic (default 0.5)
 │   │   └── --json                  Output as JSON
 │   │
 │   └── list                        List knowledge entries
@@ -58,10 +59,13 @@ vorpal config
 # Set API key
 vorpal config set --api-key ve_live_...
 
-# Search knowledge base
+# Search knowledge base (keyword by default)
 vorpal knowledge search "reentrancy vulnerability"
 vorpal knowledge search --json --limit 3 "oracle manipulation"
-vorpal knowledge search --threshold 0.3 "access control"
+
+# Semantic search (embedding-based)
+vorpal knowledge search --mode semantic "reentrancy vulnerability"
+vorpal knowledge search --mode semantic --threshold 0.3 "access control"
 
 # List knowledge entries
 vorpal knowledge list

@@ -27,15 +27,15 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
 
-          GOOS=darwin GOARCH=arm64 go build -ldflags "-s -w" -o vorpal .
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-s -w" -o vorpal ./cmd/vorpal
           tar -czf vorpal-${VERSION}-darwin-arm64.tar.gz vorpal
           rm vorpal
 
-          GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o vorpal .
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o vorpal ./cmd/vorpal
           tar -czf vorpal-${VERSION}-darwin-amd64.tar.gz vorpal
           rm vorpal
 
-          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o vorpal .
+          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o vorpal ./cmd/vorpal
           tar -czf vorpal-${VERSION}-linux-amd64.tar.gz vorpal
           rm vorpal
 

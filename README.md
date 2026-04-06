@@ -8,10 +8,16 @@ Command-line tool for the Vorpal Engineering platform.
 brew install vorpalengineering/tap/vorpal
 ```
 
+Or via Go:
+
+```bash
+go install github.com/vorpalengineering/cli/cmd/vorpal@latest
+```
+
 Or build from source:
 
 ```bash
-go build -o vorpal .
+go build -o vorpal ./cmd/vorpal
 ```
 
 ## Setup

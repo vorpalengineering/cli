@@ -8,6 +8,12 @@ Command-line tool for the Vorpal Engineering platform.
 brew install vorpalengineering/tap/vorpal
 ```
 
+Or via the install script:
+
+```bash
+curl -sSfL https://raw.githubusercontent.com/vorpalengineering/cli/main/install.sh | sh
+```
+
 Or via Go:
 
 ```bash

@@ -10,8 +10,8 @@ import (
 	"github.com/vorpalengineering/cli/internal/config"
 )
 
-func Categories(args []string) {
-	fs := flag.NewFlagSet("knowledge categories", flag.ExitOnError)
+func Types(args []string) {
+	fs := flag.NewFlagSet("knowledge types", flag.ExitOnError)
 	jsonOut := fs.Bool("json", false, "output as JSON")
 	fs.Parse(args)
 
@@ -22,7 +22,7 @@ func Categories(args []string) {
 		os.Exit(1)
 	}
 
-	body, err := c.Get("/knowledge/categories")
+	body, err := c.Get("/knowledge/node-types")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
@@ -34,20 +34,27 @@ func Categories(args []string) {
 	}
 
 	var resp struct {
-		Categories []string `json:"categories"`
+		Types []struct {
+			Name        string `json:"name"`
+			Description string `json:"description"`
+		} `json:"types"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing response: %v\n", err)
 		os.Exit(1)
 	}
 
-	if len(resp.Categories) == 0 {
-		fmt.Println("No categories found.")
+	if len(resp.Types) == 0 {
+		fmt.Println("No node types found.")
 		return
 	}
 
-	fmt.Println("Available categories:")
-	for _, cat := range resp.Categories {
-		fmt.Printf("  %s\n", cat)
+	fmt.Println("Available node types:")
+	for _, t := range resp.Types {
+		if t.Description != "" {
+			fmt.Printf("  %-15s %s\n", t.Name, t.Description)
+		} else {
+			fmt.Printf("  %s\n", t.Name)
+		}
 	}
 }

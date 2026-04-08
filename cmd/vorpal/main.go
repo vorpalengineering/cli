@@ -31,7 +31,7 @@ func main() {
 
 	case "knowledge":
 		if len(os.Args) < 3 {
-			fmt.Fprintln(os.Stderr, "Usage: vorpal knowledge <search|list|types>")
+			fmt.Fprintln(os.Stderr, "Usage: vorpal knowledge <search|list|get|types>")
 			os.Exit(1)
 		}
 		switch os.Args[2] {
@@ -39,6 +39,8 @@ func main() {
 			knowledge.Search(os.Args[3:])
 		case "list":
 			knowledge.List(os.Args[3:])
+		case "get":
+			knowledge.Get(os.Args[3:])
 		case "types":
 			knowledge.Types(os.Args[3:])
 		default:

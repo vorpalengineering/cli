@@ -16,15 +16,18 @@ Commands:
 
   knowledge search <text>  Search the knowledge base (keyword by default)
     --mode <mode>          Search mode: keyword or semantic (default keyword)
+    --type <name>          Filter by node type
     --limit N              Max results (default 5, max 20)
     --threshold N          Similarity threshold for semantic (default 0.5)
     --json                 Output as JSON
-  knowledge list           List knowledge entries
-    --limit N              Entries per page (default 10)
-    --offset N             Skip N entries
-    --category <name>      Filter by category
+  knowledge list           List knowledge nodes
+    --limit N              Nodes per page (default 10)
+    --offset N             Skip N nodes
+    --type <name>          Filter by node type
     --json                 Output as JSON
-  knowledge categories     List available categories
+  knowledge get <id>       Show a knowledge node with its relations
+    --json                 Output as JSON
+  knowledge types          List available node types
 
   version                Show CLI version
   help                   Show this help`)

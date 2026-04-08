@@ -14,8 +14,9 @@ import (
 
 type knowledgeEntry struct {
 	ID       string `json:"id"`
+	NodeType string `json:"node_type"`
 	Title    string `json:"title"`
-	Category string `json:"category"`
+	Preview  string `json:"preview"`
 	Quality  int    `json:"quality"`
 }
 
@@ -23,7 +24,7 @@ func List(args []string) {
 	fs := flag.NewFlagSet("knowledge list", flag.ExitOnError)
 	limit := fs.Int("limit", 10, "entries per page")
 	offset := fs.Int("offset", 0, "skip N entries")
-	category := fs.String("category", "", "filter by category")
+	nodeType := fs.String("type", "", "filter by node type")
 	jsonOut := fs.Bool("json", false, "output as JSON")
 	fs.Parse(args)
 
@@ -37,11 +38,11 @@ func List(args []string) {
 	params := url.Values{}
 	params.Set("limit", strconv.Itoa(*limit))
 	params.Set("offset", strconv.Itoa(*offset))
-	if *category != "" {
-		params.Set("category", *category)
+	if *nodeType != "" {
+		params.Set("types", *nodeType)
 	}
 
-	body, err := c.Get("/knowledge?" + params.Encode())
+	body, err := c.Get("/knowledge/nodes?" + params.Encode())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
@@ -56,7 +57,7 @@ func List(args []string) {
 	}
 
 	var resp struct {
-		Entries []knowledgeEntry `json:"entries"`
+		Results []knowledgeEntry `json:"results"`
 		Total   int              `json:"total"`
 		Limit   int              `json:"limit"`
 		Offset  int              `json:"offset"`
@@ -66,14 +67,14 @@ func List(args []string) {
 		os.Exit(1)
 	}
 
-	if len(resp.Entries) == 0 {
+	if len(resp.Results) == 0 {
 		fmt.Println("No entries found.")
 		return
 	}
 
-	for _, e := range resp.Entries {
-		fmt.Printf("  [%s] %s (%s)\n", e.ID[:8], e.Title, e.Category)
+	for _, e := range resp.Results {
+		fmt.Printf("  [%s] %s (%s)\n", e.ID[:8], e.Title, e.NodeType)
 	}
 
-	fmt.Printf("\nShowing %d-%d of %d entries\n", resp.Offset+1, resp.Offset+len(resp.Entries), resp.Total)
+	fmt.Printf("\nShowing %d-%d of %d entries\n", resp.Offset+1, resp.Offset+len(resp.Results), resp.Total)
 }

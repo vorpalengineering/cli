@@ -27,7 +27,13 @@ Commands:
     --json                 Output as JSON
   knowledge get <id>       Show a knowledge node with its relations
     --json                 Output as JSON
-  knowledge types          List available node types
+  knowledge traverse <id>  Walk the knowledge graph from a starting node
+    --depth N              Traversal depth, 1-5 (default 2)
+    --json                 Output as JSON
+  knowledge types          List available node and edge types
+    --nodes                Only show node types
+    --edges                Only show edge types
+    --json                 Output as JSON
 
   version                Show CLI version
   help                   Show this help`)

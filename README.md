@@ -48,17 +48,28 @@ vorpal
 ├── knowledge
 │   ├── search <text>               Search the knowledge base (keyword by default)
 │   │   ├── --mode <mode>           Search mode: keyword or semantic (default keyword)
+│   │   ├── --type <name>           Filter by node type
 │   │   ├── --limit N               Max results (default 5, max 20)
 │   │   ├── --threshold N           Similarity threshold for semantic (default 0.5)
 │   │   └── --json                  Output as JSON
 │   │
-│   ├── list                        List knowledge entries
-│   │   ├── --limit N               Entries per page (default 10)
-│   │   ├── --offset N              Skip N entries
-│   │   ├── --category <name>       Filter by category
+│   ├── list                        List knowledge nodes
+│   │   ├── --limit N               Nodes per page (default 10)
+│   │   ├── --offset N              Skip N nodes
+│   │   ├── --type <name>           Filter by node type
 │   │   └── --json                  Output as JSON
 │   │
-│   └── categories                  List available categories
+│   ├── get <id>                    Show a knowledge node with its relations
+│   │   └── --json                  Output as JSON
+│   │
+│   ├── traverse <id>               Walk the knowledge graph from a starting node
+│   │   ├── --depth N               Traversal depth, 1-5 (default 2)
+│   │   └── --json                  Output as JSON
+│   │
+│   └── types                       List available node and edge types
+│       ├── --nodes                 Only show node types
+│       ├── --edges                 Only show edge types
+│       └── --json                  Output as JSON
 │
 ├── version                         Show CLI version
 └── help                            Show help
@@ -81,9 +92,18 @@ vorpal knowledge search --json --limit 3 "oracle manipulation"
 vorpal knowledge search --mode semantic "reentrancy vulnerability"
 vorpal knowledge search --mode semantic --threshold 0.3 "access control"
 
-# List knowledge entries
+# List knowledge nodes
 vorpal knowledge list
-vorpal knowledge list --category security
+vorpal knowledge list --type finding --limit 20
+
+# Get a specific node
+vorpal knowledge get <node-id>
+vorpal knowledge get --json <node-id>
+
+# Traverse the knowledge graph from a node
+vorpal knowledge traverse <node-id>
+vorpal knowledge traverse --depth 3 <node-id>
+vorpal knowledge traverse --json --depth 1 <node-id>
 ```
 
 ## Configuration

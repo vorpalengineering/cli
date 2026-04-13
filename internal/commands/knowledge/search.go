@@ -14,12 +14,11 @@ import (
 )
 
 type searchResult struct {
-	Title        string  `json:"title"`
-	Category     string  `json:"category"`
-	Content      string  `json:"content"`
-	CodeExamples *string `json:"code_examples"`
-	Mitigation   *string `json:"mitigation"`
-	Quality      int     `json:"quality"`
+	ID       string `json:"id"`
+	NodeType string `json:"node_type"`
+	Title    string `json:"title"`
+	Preview  string `json:"preview"`
+	Quality  int    `json:"quality"`
 }
 
 func Search(args []string) {
@@ -27,12 +26,13 @@ func Search(args []string) {
 	limit := fs.Int("limit", 5, "max results (1-20)")
 	mode := fs.String("mode", "keyword", "search mode: keyword or semantic")
 	threshold := fs.Float64("threshold", 0.5, "similarity threshold for semantic search (0-2, lower = stricter)")
+	nodeType := fs.String("type", "", "filter by node type")
 	jsonOut := fs.Bool("json", false, "output as JSON")
 	fs.Parse(args)
 
 	text := strings.Join(fs.Args(), " ")
 	if text == "" {
-		fmt.Fprintln(os.Stderr, "Usage: vorpal knowledge search <text> [--mode keyword|semantic] [--limit N] [--threshold N] [--json]")
+		fmt.Fprintln(os.Stderr, "Usage: vorpal knowledge search <text> [--mode keyword|semantic] [--type X] [--limit N] [--threshold N] [--json]")
 		os.Exit(1)
 	}
 
@@ -62,11 +62,15 @@ func Search(args []string) {
 
 	if *mode == "semantic" {
 		// Semantic search via POST /knowledge/search
-		body, err := c.Post("/knowledge/search", map[string]interface{}{
+		reqBody := map[string]interface{}{
 			"text":      text,
 			"limit":     *limit,
 			"threshold": *threshold,
-		})
+		}
+		if *nodeType != "" {
+			reqBody["types"] = []string{*nodeType}
+		}
+		body, err := c.Post("/knowledge/search", reqBody)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
@@ -86,12 +90,15 @@ func Search(args []string) {
 		}
 		results = resp.Results
 	} else {
-		// Keyword search via GET /knowledge?search=...
+		// Keyword search via GET /knowledge/search?q=...
 		params := url.Values{}
-		params.Set("search", text)
+		params.Set("q", text)
 		params.Set("limit", strconv.Itoa(*limit))
+		if *nodeType != "" {
+			params.Set("types", *nodeType)
+		}
 
-		body, err := c.Get("/knowledge?" + params.Encode())
+		body, err := c.Get("/knowledge/search?" + params.Encode())
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
@@ -103,13 +110,13 @@ func Search(args []string) {
 		}
 
 		var resp struct {
-			Chunks []searchResult `json:"chunks"`
+			Results []searchResult `json:"results"`
 		}
 		if err := json.Unmarshal(body, &resp); err != nil {
 			fmt.Fprintf(os.Stderr, "Error parsing response: %v\n", err)
 			os.Exit(1)
 		}
-		results = resp.Chunks
+		results = resp.Results
 	}
 
 	if len(results) == 0 {
@@ -126,27 +133,12 @@ func Search(args []string) {
 
 func printResult(num int, r searchResult) {
 	fmt.Printf("  ┌─ [%d] %s\n", num, r.Title)
-	fmt.Printf("  │  Category: %s  Quality: %d/5\n", r.Category, r.Quality)
+	fmt.Printf("  │  Type: %s  Quality: %d/5\n", r.NodeType, r.Quality)
 	fmt.Printf("  │\n")
 
-	fmt.Printf("  │  Description:\n")
-	for _, line := range wrapText(r.Content, 72) {
-		fmt.Printf("  │    %s\n", line)
-	}
-
-	if r.CodeExamples != nil && *r.CodeExamples != "" {
-		fmt.Printf("  │\n")
-		fmt.Printf("  │  Code Examples:\n")
-		for _, line := range strings.Split(*r.CodeExamples, "\n") {
-			fmt.Printf("  │    %s\n", line)
-		}
-	}
-
-	if r.Mitigation != nil && *r.Mitigation != "" {
-		fmt.Printf("  │\n")
-		fmt.Printf("  │  Mitigation:\n")
-		for _, line := range wrapText(*r.Mitigation, 72) {
-			fmt.Printf("  │    %s\n", line)
+	if r.Preview != "" {
+		for _, line := range wrapText(r.Preview, 72) {
+			fmt.Printf("  │  %s\n", line)
 		}
 	}
 

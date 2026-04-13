@@ -39,5 +39,5 @@ func Set(args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Vorpal CLI Config Updated")
+	fmt.Printf("Vorpal CLI Config Updated\n")
 }
